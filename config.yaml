@@ -1,0 +1,6 @@
+clevr_images_path: '/mnt/data/datasets/CLEVR/CLEVR_v1.0/images'
+clevr_questions_path: '/mnt/data/datasets/CLEVR/CLEVR_v1.0/questions'
+
+#clevr_hd5_path: '/mnt/data/datasets/CLEVR/'
+clevr_hd5_path: '/scratch/aelnouby/clevr/'
+clevr_vocab: '/scratch/aelnouby/clevr/vocab.hdf5'
