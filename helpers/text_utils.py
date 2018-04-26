@@ -46,13 +46,9 @@ class TextHelper(object):
 
     def bow_to_question(self, bows):
         """
-        Converts text question to list of indices representing each word index in the vocab.
-        Each list must have the same size, so we pad zeroes until we reach the size of the
-        longest question of the current batch
-        :param questions: batch of Text questions
-        :return: bow: batch of question word indices
-        :return: questions_len: list of questions lengths
-        :returnL questions_sorting: indices of sorted questions
+        Converts a a list of indices from the vocab to a textual sentence
+        :param bows: List of list of indices
+        :return: questions: list of text-based questions
         """
         self.inv_questions[0] = ''
         questions = []
@@ -75,8 +71,8 @@ class TextHelper(object):
     def get_answer(self, indicies):
         """
         Gets the answer's index from the Answers vocab
-        :param answers: batch of text answers
-        :return: batch of corresponding indices in answers vocb
+        :param indicies: list of indices (answers keys in vocab)
+        :return: array of textual answers
         """
         answers = [self.inv_answers[i] for i in indicies]
         return np.array(answers)
