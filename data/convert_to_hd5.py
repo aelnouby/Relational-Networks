@@ -6,11 +6,10 @@ import yaml
 import h5py
 import os
 import json
-# from joblib import Parallel, delayed
-import multiprocessing
 from tqdm import tqdm
 import cv2
 import numpy as np
+
 with open('config.yaml') as f:
     config = yaml.load(f)
 
@@ -29,8 +28,6 @@ class HD5Converter(object):
         print('Creating mapping...')
         i = 0
         for entry in tqdm(question_info):
-            # if entry['answer'] not in ['sphere', 'cube', 'cylinder']:
-            #     continue
             self._write_example(i, entry['image_filename'], entry['question'], entry['answer'])
             i += 1
 
