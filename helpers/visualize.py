@@ -32,5 +32,11 @@ class VisdomPlotter(object):
         else:
             self.viz.images(images, env=self.env, win=self.plots[var_name])
 
+    def print(self, var_name, text):
+        if var_name not in self.plots:
+            self.plots[var_name] = self.viz.text(text, env=self.env)
+        else:
+            self.viz.text(text, env=self.env, win=self.plots[var_name])
+
 
 
