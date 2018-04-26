@@ -6,11 +6,10 @@ import yaml
 import h5py
 import os
 import json
-from joblib import Parallel, delayed
-import multiprocessing
 from tqdm import tqdm
 import cv2
 import numpy as np
+
 with open('config.yaml') as f:
     config = yaml.load(f)
 
@@ -27,38 +26,28 @@ class HD5Converter(object):
     def convert_to_hd5(self):
         question_info = json.load(open(self.question_path))['questions']
         print('Creating mapping...')
+        i = 0
         for entry in tqdm(question_info):
-            pair = tuple((entry['question'], entry['answer']))
-            if entry['image_filename'] not in self.image_question_mapping:
-                self.image_question_mapping[entry['image_filename']] = []
-                self.dataset.create_group(str(entry['image_index']))
+            self._write_example(i, entry['image_filename'], entry['question'], entry['answer'])
+            i += 1
 
-            self.image_question_mapping[entry['image_filename']].append(pair)
+    def _write_example(self, it, image, question, answer):
 
-        num_cores = multiprocessing.cpu_count() - 1
-        print('Multi-processing writing...')
-        Parallel(n_jobs=1)(delayed(self._write_example)(it, key)
-                           for it, key in tqdm(enumerate(self.image_question_mapping.keys()), total=len(self.image_question_mapping)))
-
-    def _write_example(self, it, key):
-        img = open(os.path.join(self.images_path, key), 'rb').read()
+        img = open(os.path.join(self.images_path, image), 'rb').read()
         img = cv2.imdecode(np.fromstring(img, np.uint8), 1)
         img = cv2.resize(img, (128, 128))
         _, img = cv2.imencode('.jpg', img)
         img = img.tostring()
 
-        questions = [x[0] for x in self.image_question_mapping[key]]
-        answers = [x[1] for x in self.image_question_mapping[key]]
-
-        example = self.dataset[str(it)]
+        example = self.dataset.create_group(str(it))
         example.create_dataset('image', data=[img])
-        example.create_dataset('questions', data=json.dumps(questions))
-        example.create_dataset('answers', data=json.dumps(answers))
+        example.create_dataset('question', data=json.dumps(question))
+        example.create_dataset('answer', data=json.dumps(answer))
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--split', default='train')
+    parser.add_argument('--split', default='val')
 
     args = parser.parse_args()
     converter = HD5Converter(split=args.split)

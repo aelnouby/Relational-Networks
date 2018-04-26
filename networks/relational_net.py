@@ -44,7 +44,7 @@ class RelationalNetwork(nn.Module):
             nn.Linear(g_dim, f_dim),
             nn.ReLU(),
             nn.Linear(f_dim, f_dim),
-            nn.Dropout(p=0.02),
+            nn.Dropout(p=0.5),
             nn.ReLU(),
             nn.Linear(f_dim, num_classes)
         )

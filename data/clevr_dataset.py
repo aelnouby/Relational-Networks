@@ -14,7 +14,7 @@ class CLEVRDataset(Dataset):
         self.dataset = None
 
         file = h5py.File(self.file_path, 'r')
-        self.len = int(np.array(file['len']))
+        self.len = int(len(list(file.keys()))) - 1
         file.close()
 
         self.transforms = transforms
@@ -31,10 +31,9 @@ class CLEVRDataset(Dataset):
         example = self.dataset[str(idx)]
 
         image = cv2.imdecode(np.fromstring(example['image'][0], np.uint8), 1)
-        questions = json.loads(self.h5py2str(example['questions']))
-        answers = json.loads(self.h5py2str(example['answers']))
-
-        qa_index = np.random.randint(0, len(questions))
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        questions = json.loads(self.h5py2str(example['question']))
+        answers = json.loads(self.h5py2str(example['answer']))
 
         image = image.transpose(2, 0, 1)
         if self.transforms:
@@ -44,8 +43,8 @@ class CLEVRDataset(Dataset):
 
         sample = {
             'image': image,
-            'questions': questions[qa_index],
-            'answers': answers[qa_index]
+            'question': questions,
+            'answer': answers
         }
 
         return sample
